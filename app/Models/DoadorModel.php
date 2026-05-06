@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Cliente_Model extends Model
+class DoadorModel extends Model
 {
-    protected $table = 'cliente';
+    protected $table = 'doador';
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
