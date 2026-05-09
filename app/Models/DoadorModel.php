@@ -10,9 +10,15 @@ class DoadorModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
-        'nome',
-        'email',
-        'celular',
-        'data_nas'
-    ];
+    'nome',
+    'email',
+    'celular',
+    'data_nas',
+    'senha',
+    'codigo_verificacao', // 🔥 ADICIONA
+    'verificado',
+    'ultimo_acesso' // 🔥 ADICIONA
+];
+
+
 }

@@ -9,11 +9,24 @@
 </head>
 <body>
 
-    <?= $this->extend('cliente/layout/dashboard') ?>
 
-<?= $this->section('title') ?>Cadastrar<?= $this->endSection() ?>
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
 
-<?= $this->section('content') ?>
+        <a class="navbar-brand" href="<?= base_url('/') ?>">
+            Sistema Doação
+        </a>
+
+        <a href="<?= base_url('/') ?>" class="btn btn-outline-light btn-sm">
+            🏠 Início
+        </a>
+
+    </div>
+</nav>
+
+<div class="container mt-5" style="max-width: 600px;">
+
 
 <h2>Cadastrar Cliente</h2>
 
@@ -21,13 +34,29 @@
 
     <input type="text" name="nome" placeholder="Nome" class="form-control mb-2">
     <input type="email" name="email" placeholder="Email" class="form-control mb-2">
-    <input type="text" name="celular" placeholder="Celular" class="form-control mb-2">
+    <input type="text" name="celular" id="celular" class="form-control mb-2" placeholder="(44) 99999-9999">       
     <input type="date" name="data_nas" class="form-control mb-2">
 
     <button class="btn btn-primary">Salvar</button>
 
 </form>
+</div>
 
-<?= $this->endSection() ?>
+<script>
+document.getElementById('celular').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+
+    if (v.length > 11) v = v.slice(0, 11);
+
+    if (v.length > 6) {
+        v = v.replace(/^(\d{2})(\d{5})(\d+)/, '($1) $2-$3');
+    } else if (v.length > 2) {
+        v = v.replace(/^(\d{2})(\d+)/, '($1) $2');
+    }
+
+    e.target.value = v;
+});
+</script>
+
 </body>
 </html>

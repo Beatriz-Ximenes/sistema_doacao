@@ -6,7 +6,7 @@
 
 <h2>Doar Roupa</h2>
 
-<form action="<?= base_url('doador/roupas/salvar') ?>" method="post">
+<form action="<?= base_url('doador/roupas/salvar') ?>" method="post" enctype="multipart/form-data">
 
     <label>Tipo</label>
     <select name="tipo" class="form-control mb-2">
@@ -24,8 +24,9 @@
     <input type="text" name="bairro" placeholder="Bairro" class="form-control mb-2">
     <input type="text" name="ponto_doacao" placeholder="Ponto de Doação" class="form-control mb-3">
 
-    <button class="btn btn-success">Doar</button>
-
+    <label>Imagem da roupa</label>
+        <input type="file" name="imagem" class="form-control mb-3">
+<button type="submit" class="btn btn-success">Doar</button>
 </form>
 
 <?= $this->endSection() ?>

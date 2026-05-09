@@ -13,6 +13,8 @@ class Cliente_Model extends Model
         'nome',
         'email',
         'celular',
-        'data_nas'
+        'data_nas',
+        'senha',
+        'ultimo_acesso' // 🔥 ADICIONA
     ];
 }

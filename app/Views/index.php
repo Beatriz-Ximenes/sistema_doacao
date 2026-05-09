@@ -24,6 +24,8 @@
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="<?= site_url('cliente/cadastrar') ?>">Cadastro de Cliente</a></li>
                     <li><a class="dropdown-item" href="<?= site_url('doador/cadastrar') ?>">Cadastro de Doador</a></li>
+                    <li><a class="dropdown-item" href="<?= site_url('cliente/login') ?>">Login Cliente</a></li>
+                    <li><a class="dropdown-item" href="<?= site_url('doador/login') ?>">Login Doador</a></li>
                 </ul>
         </li>
         
@@ -36,7 +38,8 @@
         pode se cadastrar como doador ou beneficiário para participar dessa causa nobre.</p>
     <p>Para se cadastrar, clique no link abaixo:</p>
     <ul>
-        <li><a href="<?= site_url('cliente') ?>">Cadastro de Cliente</a></li>
+        <li><a href="<?= site_url('cliente/cadastrar') ?>">Cadastro de Cliente</a></li>
+        <li><a href="<?= site_url('doador/cadastrar') ?>">Cadastro de Doador</a></li>
     </ul>
 
     <footer>Este projeto é do Tema Integrador da Universidade UNIG </footer>

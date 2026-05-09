@@ -16,6 +16,9 @@ class Cliente extends BaseController
 
     public function autenticar()
     {
+        // remove sessão antiga
+        session()->remove(['id', 'nome', 'logado']);
+
         $model = new Cliente_Model();
 
         $email = $this->request->getPost('email');
@@ -23,18 +26,18 @@ class Cliente extends BaseController
 
         $cliente = $model->where('email', $email)->first();
 
-        if ($cliente && password_verify($senha, $cliente['senha'])) { // simples por enquanto
+        if ($cliente && $cliente['senha'] === $senha) {
 
             session()->set([
-                'id'    => $cliente['id'],
-                'nome'  => $cliente['nome'],
-                'logado'=> true
+                'id'      => $cliente['id'],
+                'nome'    => $cliente['nome'],
+                'logado'  => true
             ]);
 
             return redirect()->to('/cliente');
         }
 
-        return redirect()->back()->with('erro', 'Login inválido');
+        return redirect()->back()->with('erro', 'Email ou senha inválidos');
     }
 
     public function logout()
@@ -47,12 +50,13 @@ class Cliente extends BaseController
     {
         $this->verificarLogin();
 
-        return view('cliente/dashboard');
+        // 🔥 limpa automaticamente
+
+        return view('cliente/index');
     }
 
     public function cadastrar()
     {
-        $this->verificarLogin();
 
         return view('cliente/cadastrar');
     }
@@ -65,39 +69,110 @@ class Cliente extends BaseController
         }
     }
 
-    public function cadastrarDoador()
+    
+
+
+public function catalogo()
 {
-    $this->verificarLogin();
-    return view('cliente/doador/cadastrar');
+    $db = \Config\Database::connect();
+
+    $query = $db->query("
+        SELECT roupas.*, doador.nome as nome_doador
+        FROM roupas
+        JOIN doador ON doador.id = roupas.idDoador
+    ");
+
+    $dados['roupas'] = $query->getResultArray();
+
+    return view('cliente/catalogo', $dados);
 }
 
-public function salvarDoador()
+public function detalhes($id)
 {
-    $doadorModel = new DoadorModel();
-    $enderecoModel = new EnderecoModel();
+    $db = \Config\Database::connect();
 
-    // salva doador
-    $doadorId = $doadorModel->insert([
-        'nome'      => $this->request->getPost('nome'),
-        'email'     => $this->request->getPost('email'),
-        'celular'   => $this->request->getPost('celular'),
-        'data_nas'  => $this->request->getPost('data_nas'),
-    ]);
+    $query = $db->query("
+        SELECT roupas.*, 
+       doador.nome as nome_doador, 
+       doador.celular, 
+       doador.email
+        FROM roupas
+        JOIN doador ON doador.id = roupas.idDoador
+        WHERE roupas.id = ?
+    ", [$id]);
 
-    // salva endereço
-    $enderecoModel->insert([
-        'idReferencia' => $doadorId,
-        'tipo'         => 'doador',
-        'rua'          => $this->request->getPost('rua'),
-        'complemento'  => $this->request->getPost('complemento'),
-        'bairro'       => $this->request->getPost('bairro'),
-        'municipio'    => $this->request->getPost('municipio'),
-        'estado'       => $this->request->getPost('estado'),
-        'local_doacao' => $this->request->getPost('local_doacao'),
-    ]);
+    $dados['roupa'] = $query->getRowArray();
 
-    return redirect()->to('/cliente');
+    return view('cliente/detalhes', $dados);
 }
 
+public function interesse($idRoupa)
+{
+    $db = \Config\Database::connect();
+
+    // evita duplicado
+    $existe = $db->table('interesse')
+        ->where('idRoupa', $idRoupa)
+        ->where('idCliente', session()->get('id'))
+        ->get()
+        ->getRow();
+
+    if (!$existe) {
+        $db->table('interesse')->insert([
+            'idRoupa'   => $idRoupa,
+            'idCliente' => session()->get('id')
+        ]);
+    }
+
+    return redirect()->back()->with('sucesso', 'Interesse registrado!');
+}
+
+public function salvar()
+    {
+        $clienteModel = new Cliente_Model();
+
+        $celular = preg_replace('/\D/', '', $this->request->getPost('celular'));
+
+    if (strlen($celular) != 11) {
+        return redirect()->back()->with('erro', 'Número inválido');
+    }
+
+    $email = $this->request->getPost('email');
+
+    // verificar duplicidade
+    if ($clienteModel->where('email', $email)->first()) {
+        return redirect()->back()->with('erro', 'Email já cadastrado');
+    }
+
+    if ($clienteModel->where('celular', $celular)->first()) {
+        return redirect()->back()->with('erro', 'Celular já cadastrado');
+    }
+
+    $codigo = rand(100000, 999999);
+
+    $clienteId = $clienteModel->insert([
+        'nome' => $this->request->getPost('nome'),
+        'email' => $email,
+        'celular' => $celular,
+        'data_nas' => $this->request->getPost('data_nas'),
+        'senha' => $this->request->getPost('senha'),
+        'codigo_verificacao' => $codigo,
+        'verificado' => 0
+    ]);
+
+    return redirect()->to('/cliente/verificar/'.$clienteId);
+    }
+
+    public function verificar($id)
+{
+    $model = new Cliente_Model();
+    $cliente = $model->find($id);
+
+    return view('cliente/verificar', [
+    'id' => $id,
+    'codigo' => $cliente['codigo_verificacao'],
+    'celular' => $cliente['celular']
+]);
+}
     
 }

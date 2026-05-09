@@ -15,6 +15,7 @@ class RoupaModel extends Model
     'quantidade',
     'bairro',
     'ponto_doacao',
-    'idDoador'
+    'idDoador',
+    'imagem'
 ];
 }
