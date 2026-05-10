@@ -1,3 +1,7 @@
+<head>
+    <link rel="stylesheet" href="<?= base_url('assets/css/doador/verificar.css') ?>">
+</head>
+
 <h2>Verificação</h2>
 
 <?php if(session()->getFlashdata('erro')): ?>

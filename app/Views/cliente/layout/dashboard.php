@@ -16,8 +16,10 @@
         <h4 class="text-center mb-4"><?= session()->get('nome') ?? 'Cliente' ?></h4>
 
         <a href="<?= base_url('cliente') ?>" class="class="<?= str_contains(uri_string(), 'cliente') ? 'active' : '' ?>"">🏠 Home</a>
-        <a href="<?= base_url('cliente/listar') ?>">📋 Meus dados</a>
-        <a href="<?= base_url('cliente/compras') ?>">💳 Doações adquiridas</a>
+        <a href="<?= base_url('cliente/perfil') ?>">📋 Meus dados</a>
+        <a href="<?= base_url('cliente/historico') ?>">💳 Historico de interesses</a>
+        <a href="<?= base_url('cliente/catalogo') ?>">💳 Catálogo de roupas</a>
+
     </div>
 
     <!-- CONTEÚDO -->

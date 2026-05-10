@@ -4,6 +4,10 @@
 
 <?= $this->section('content') ?>
 
+<head>
+    <link rel="stylesheet" href="<?= base_url('assets/css/doador/roupa/index.css') ?>">
+</head>
+
 <h2>Minhas Doações</h2>
 
 <table class="table table-bordered mt-4">

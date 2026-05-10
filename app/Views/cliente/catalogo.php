@@ -4,6 +4,10 @@
 
 <?= $this->section('content') ?>
 
+<head>
+    <link rel="stylesheet" href="<?= base_url('assets/css/cliente/catalogo.css') ?>">
+</head>
+
 <h2>Catálogo de Doações</h2>
 
 <div class="row">

@@ -4,6 +4,11 @@
 
 <?= $this->section('content') ?>
 
+<head>
+    <link rel="stylesheet" href="<?= base_url('assets/css/cliente/detalhes.css') ?>">
+</head>
+
+
 <h2>Detalhes da Roupa</h2>
 
 <?php if(session()->getFlashdata('sucesso')): ?>

@@ -4,6 +4,11 @@
 
 <?= $this->section('content') ?>
 
+<head>
+    <link rel="stylesheet" href="<?= base_url('assets/css/doador/roupa/cadastrar.css') ?>">
+</head>
+
+
 <h2>Doar Roupa</h2>
 
 <form action="<?= base_url('doador/roupas/salvar') ?>" method="post" enctype="multipart/form-data">

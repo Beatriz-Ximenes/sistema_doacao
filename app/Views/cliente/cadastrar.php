@@ -36,6 +36,17 @@
     <input type="email" name="email" placeholder="Email" class="form-control mb-2">
     <input type="text" name="celular" id="celular" class="form-control mb-2" placeholder="(44) 99999-9999">       
     <input type="date" name="data_nas" class="form-control mb-2">
+    <input type="password" name="senha" placeholder="Senha" class="form-control mb-2">
+    
+    <!-- ENDEREÇO -->
+    <h5>Endereço</h5>
+    <input type="text" name="cep" id="cep" placeholder="CEP" class="form-control mb-2">
+    <input type="text" name="rua" id="rua" placeholder="Rua" class="form-control mb-2">
+    <input type="text" name="complemento" placeholder="Complemento" class="form-control mb-2">
+    <input type="text" name="bairro" id="bairro" placeholder="Bairro" class="form-control mb-2">
+    <input type="text" name="municipio" id="municipio" placeholder="Cidade" class="form-control mb-2">
+    <input type="text" name="estado" id="estado" placeholder="Estado" class="form-control mb-2">
+
 
     <button class="btn btn-primary">Salvar</button>
 
@@ -55,6 +66,30 @@ document.getElementById('celular').addEventListener('input', function(e) {
     }
 
     e.target.value = v;
+});
+</script>
+
+<script>
+document.getElementById('cep').addEventListener('blur', function () {
+
+    let cep = this.value.replace(/\D/g, '');
+
+    if (cep.length !== 8) return;
+
+    fetch('https://viacep.com.br/ws/' + cep + '/json/')
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.erro) {
+                alert('CEP não encontrado');
+                return;
+            }
+
+            document.getElementById('rua').value = data.logradouro;
+            document.getElementById('bairro').value = data.bairro;
+            document.getElementById('municipio').value = data.localidade;
+            document.getElementById('estado').value = data.uf;
+        });
 });
 </script>
 

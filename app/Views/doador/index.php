@@ -4,9 +4,14 @@
 
 <?= $this->section('content') ?>
 
+<head>
+    <link rel="stylesheet" href="<?= base_url('assets/css/doador/index.css') ?>">
+</head>
+
 <h2>Bem-vindo!</h2>
 
 <div class="row mt-4">
+    
 
     <div class="col-md-4">
         <div class="card p-3">
@@ -24,13 +29,21 @@
         </div>
     </div>
 
+    <?php foreach ($itens as $item): ?>
+
     <div class="col-md-4">
         <div class="card p-3">
             <h5>❤️ Interessados</h5>
             <p>Pessoas interessadas</p>
-            <a href="<?= base_url('doador/interessados') ?>" class="btn btn-primary">Acessar</a>
+
+            <a href="<?= base_url('doador/interessados/'.$item['id']) ?>">
+                Ver interessados
+            </a>
+
         </div>
     </div>
+
+<?php endforeach; ?>
 
 </div>
 

@@ -15,6 +15,8 @@ class Cliente_Model extends Model
         'celular',
         'data_nas',
         'senha',
-        'ultimo_acesso' // 🔥 ADICIONA
+        'codigo_verificacao',
+        'verificado',
+        'ultimo_acesso'
     ];
 }

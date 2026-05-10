@@ -11,15 +11,17 @@
 <div class="row mt-4">
     <div class="col-md-4">
         <div class="card p-3">
-            <h5>Meus Dados</h5>
-            <p>Atualize suas informações</p>
+            <a href="<?= base_url('cliente/perfil') ?>">
+                Atualizar perfil
+            </a>
         </div>
     </div>
 
     <div class="col-md-4">
         <div class="card p-3">
-            <h5>Compras</h5>
-            <p>Veja seu histórico</p>
+            <a href="<?= base_url('cliente/historico') ?>">
+                Ver histórico de interesses
+            </a>
         </div>
     </div>
 

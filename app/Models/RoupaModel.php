@@ -10,12 +10,15 @@ class RoupaModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
-    'tipo',
-    'cor',
-    'quantidade',
-    'bairro',
-    'ponto_doacao',
-    'idDoador',
-    'imagem'
-];
+        'tipo',
+        'cor',
+        'quantidade',
+        'bairro',
+        'ponto_doacao',
+        'idDoador',
+        'imagem',
+        'criado_em',
+        'status',        // 🔥 IMPORTANTE
+        'data_doado'     // 🔥 IMPORTANTE
+    ];
 }

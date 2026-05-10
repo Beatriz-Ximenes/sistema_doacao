@@ -16,6 +16,7 @@ class EnderecoModel extends Model
         'bairro',
         'municipio',
         'estado',
-        'local_doacao'
+        'local_doacao',
+        'cep'
     ];
 }

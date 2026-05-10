@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Cadastrar Doador</title>
-
+    <link rel="stylesheet" href="<?= base_url('assets/css/doador/cadastrar.css') ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -40,14 +40,17 @@
         <input type="text" name="nome" placeholder="Nome" class="form-control mb-2" required>
         <input type="email" name="email" placeholder="Email" class="form-control mb-2" required>
         <input type="text" name="celular" id="celular" class="form-control mb-2" placeholder="(44) 99999-9999">        <input type="date" name="data_nas" class="form-control mb-3">
+        <input type="password" name="senha" class="form-control mb-3" placeholder="Senha" required>
+
 
         <h5>Endereço</h5>
 
-        <input type="text" name="rua" placeholder="Rua" class="form-control mb-2">
+        <input type="text" name="cep" id="cep" placeholder="CEP" class="form-control mb-2">
+        <input type="text" name="rua" id="rua" placeholder="Rua" class="form-control mb-2">
         <input type="text" name="complemento" placeholder="Complemento" class="form-control mb-2">
-        <input type="text" name="bairro" placeholder="Bairro" class="form-control mb-2">
-        <input type="text" name="municipio" placeholder="Município" class="form-control mb-2">
-        <input type="text" name="estado" placeholder="Estado" class="form-control mb-2">
+        <input type="text" name="bairro" id="bairro" placeholder="Bairro" class="form-control mb-2">
+        <input type="text" name="municipio" id="municipio" placeholder="Cidade" class="form-control mb-2">
+        <input type="text" name="estado" id="estado" placeholder="Estado" class="form-control mb-2">
 
         <select name="local_doacao" class="form-control mb-3">
             <option value="Nao">Não é ponto de doação</option>
@@ -73,6 +76,27 @@ document.getElementById('celular').addEventListener('input', function(e) {
     }
 
     e.target.value = v;
+});
+</script>
+
+<script>
+document.getElementById('cep').addEventListener('blur', function () {
+
+    let cep = this.value.replace(/\D/g, '');
+
+    if (cep.length !== 8) return;
+
+    fetch('https://viacep.com.br/ws/' + cep + '/json/')
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.erro) return;
+
+            document.getElementById('rua').value = data.logradouro;
+            document.getElementById('bairro').value = data.bairro;
+            document.getElementById('municipio').value = data.localidade;
+            document.getElementById('estado').value = data.uf;
+        });
 });
 </script>
 
