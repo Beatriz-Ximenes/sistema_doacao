@@ -207,7 +207,7 @@
       </div>
     </div>
     <div class="container foot-bottom">
-      <small>© 2026 Veste+ · Feito com ♥ para vestir o Brasil</small>
+      <small>© 2026 Veste+ · Desenvolvido por Caio, Arthur, Beatriz e José para vestir o Brasil</small>
     </div>
   </footer>
 
