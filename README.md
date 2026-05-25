@@ -38,22 +38,3 @@ HTML5
 CSS3
 JavaScript (Vanilla)
 Bootstrap (parcial)
-📁 Estrutura do projeto
-app/
- ├── Controllers/
- │    ├── Cliente.php
- │    ├── Doador.php
- │
- ├── Models/
- │    ├── Cliente_Model.php
- │    ├── DoadorModel.php
- │    ├── EnderecoModel.php
- │
- ├── Views/
- │    ├── cliente/
- │    ├── doador/
- │
-public/
- ├── assets/
- ├── img/
- ├── script.js
