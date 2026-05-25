@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
- <link rel="stylesheet" href="style.css" />
+ <link rel="stylesheet" href="assets/css/index.css" />
  <link rel="icon" href="icon/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -211,6 +211,105 @@
     </div>
   </footer>
 
+
+  <!-- Modal login -->
+<!-- Modal login -->
+<div class="modal" id="loginModal" aria-hidden="true">
+
+    <div class="modal-backdrop" data-close-login></div>
+
+    <div class="modal-card">
+
+        <button class="modal-close"
+                data-close-login>
+            ×
+        </button>
+
+        <span class="eyebrow">
+            Bem-vindo(a)
+        </span>
+
+        <h3>Entrar na Veste+</h3>
+
+        <p class="muted">
+            Acesse sua conta
+        </p>
+
+<form id="loginForm" method="post">
+
+            <label>
+                E-mail
+                <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="voce@email.com">
+            </label>
+
+            <label>
+                Como deseja entrar?
+            </label>
+
+            <div class="tipo-usuario">
+
+                <label class="tipo-card">
+
+                    <input
+                        type="radio"
+                        name="tipo"
+                        value="doador"
+                        required>
+
+                    <div class="tipo-content">
+                        🎁
+                        <strong>Doador</strong>
+                    </div>
+
+                </label>
+
+                <label class="tipo-card">
+
+                    <input
+                        type="radio"
+                        name="tipo"
+                        value="recebedor"
+                        required>
+
+                    <div class="tipo-content">
+                        🧥
+                        <strong>Receber</strong>
+                    </div>
+
+                </label>
+
+            </div>
+
+            <label>
+                Senha
+                <input
+                    type="password"
+                    name="senha"
+                    required
+                    placeholder="******">
+            </label>
+
+            <button
+                type="submit"
+                class="btn btn-primary btn-block">
+
+                Entrar
+
+            </button>
+
+            <p id="loginMsg"
+               class="form-msg"></p>
+
+        </form>
+
+    </div>
+
+</div>
+
   <!-- Modal cadastro -->
   <div class="modal" id="signupModal" aria-hidden="true">
     <div class="modal-backdrop" data-close></div>
@@ -218,20 +317,91 @@
       <button class="modal-close" data-close aria-label="Fechar">×</button>
       <span class="eyebrow">Bem-vindo(a)</span>
       <h3 id="modalTitle">Crie sua conta Veste+</h3>
-      <p class="muted">Comece a doar em menos de 2 minutos.</p>
-      <form id="signupForm" novalidate>
-        <label>Nome completo
+<form id="signupForm" method="post" action="">
+            <label>Nome completo
           <input type="text" name="nome" required minlength="3" placeholder="Maria Silva" />
         </label>
         <label>E-mail
           <input type="email" name="email" required placeholder="voce@email.com" />
         </label>
-        <label>Cidade
-          <input type="text" name="cidade" required placeholder="Sua cidade" />
-        </label>
+  
+        <label>Celular
+<input 
+type="text"
+name="celular"
+required
+placeholder="(41)99999-9999">
+</label>
+
+<label>Data nascimento
+<input
+type="date"
+name="data_nas"
+required>
+</label>
+
+<label>CEP
+<input
+type="text"
+name="cep">
+</label>
+
+<label>Rua
+<input
+type="text"
+name="rua">
+</label>
+
+<label>Bairro
+<input
+type="text"
+name="bairro">
+</label>
+
+<label>Complemento
+<input
+type="text"
+name="complemento">
+</label>
+
+<label>Municipio
+<input
+type="text"
+name="municipio">
+</label>
+
+<label>Estado
+<input
+type="text"
+name="estado">
+</label>
         <label>Senha
           <input type="password" name="senha" required minlength="6" placeholder="Mínimo 6 caracteres" />
         </label>
+
+<label>Como deseja usar a Veste+?</label>
+
+<div class="tipo-usuario">
+
+    <label class="tipo-card">
+        <input type="radio" name="tipo" value="doador" required>
+
+        <div class="tipo-content">
+            <span>🎁</span>
+            <strong>Doador</strong>
+        </div>
+    </label>
+
+    <label class="tipo-card">
+        <input type="radio" name="tipo" value="recebedor" required>
+
+        <div class="tipo-content">
+            <span>🧥</span>
+            <strong>Receber</strong>
+        </div>
+    </label>
+
+</div>
         <label class="checkbox">
           <input type="checkbox" required />
           <span>Aceito os termos e a política de privacidade</span>
@@ -243,5 +413,28 @@
   </div>
 
   <script src="./script.js"></script>
+<script>
+
+document.getElementById("signupForm")
+.addEventListener("submit", function(e){
+
+    let tipo = document.querySelector('input[name="tipo"]:checked');
+
+    if(!tipo){
+        e.preventDefault();
+        alert("Selecione um tipo");
+        return;
+    }
+
+    if(tipo.value === "doador"){
+        this.action = "<?= base_url('doador/salvar') ?>";
+    } else {
+        this.action = "<?= base_url('cliente/salvar') ?>";
+    }
+
+});
+</script>
+
+
 </body>
 </html>

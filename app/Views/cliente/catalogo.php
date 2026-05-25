@@ -30,7 +30,7 @@
                 </p>
 
                 <small class="text-muted">
-                    Doador: <?= $r['nome_doador'] ?>
+                    Doador:    <?= $r['nome_doador'] ?>
                 </small>
 
                 <a href="<?= base_url('cliente/detalhes/'.$r['id']) ?>" class="btn btn-primary mt-2">

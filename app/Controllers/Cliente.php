@@ -58,7 +58,7 @@ class Cliente extends BaseController
     public function logout()
     {
         session()->destroy();
-        return redirect()->to('/cliente/login');
+        return redirect()->to('/');
     }
 
     // -- INDEX VERIFICA SE ESTÁ LOGADO E MOSTRA O DASHBOARD
@@ -146,73 +146,114 @@ class Cliente extends BaseController
     }
 
     // -- SALVAR RECEBE OS DADOS DO FORMULÁRIO DE CADASTRO E SALVA O CLIENTE
-    public function salvar()
-    {
 
-        $clienteModel = new Cliente_Model();
+    public function salvar()
+{
+    try {
+
+        $clienteModel  = new \App\Models\Cliente_Model();
+        $enderecoModel = new \App\Models\EnderecoModel();
+
+        // =====================
+        // DADOS DO FORM
+        // =====================
+        $nome   = trim($this->request->getPost('nome'));
+        $email  = trim($this->request->getPost('email'));
+        $senha  = $this->request->getPost('senha');
 
         $celular = preg_replace('/\D/', '', $this->request->getPost('celular'));
 
-        if (strlen($celular) != 11) {
-            return redirect()->back()->with('erro', 'Número inválido');
+        $dataNas = $this->request->getPost('data_nas');
+
+        // =====================
+        // VALIDAÇÕES
+        // =====================
+
+        if (!$nome || !$email || !$senha) {
+            return redirect()->back()->with('erro', 'Preencha todos os campos obrigatórios');
         }
 
-        $email = $this->request->getPost('email');
+        if (strlen($celular) != 11) {
+            return redirect()->back()->with('erro', 'Número de celular inválido');
+        }
 
+        // email duplicado
         if ($clienteModel->where('email', $email)->first()) {
             return redirect()->back()->with('erro', 'Email já cadastrado');
         }
 
+        // celular duplicado
         if ($clienteModel->where('celular', $celular)->first()) {
             return redirect()->back()->with('erro', 'Celular já cadastrado');
         }
 
+        // =====================
+        // CÓDIGO VERIFICAÇÃO
+        // =====================
         $codigo = rand(100000, 999999);
 
-            
-
-        $clienteId = $clienteModel->insert([
-            'nome' => $this->request->getPost('nome'),
-            'email' => $email,
-            'celular' => $celular,
-            'data_nas' => $this->request->getPost('data_nas'),
-            'senha' => $this->request->getPost('senha'),
-            'codigo_verificacao' => $codigo,
-            'verificado' => 0
-        ], true);
-
-        $enderecoModel = new \App\Models\EnderecoModel();
-
-        $enderecoModel->insert([
-            'rua'         => $this->request->getPost('rua'),
-            'complemento' => $this->request->getPost('complemento'),
-            'bairro'      => $this->request->getPost('bairro'),
-            'municipio'   => $this->request->getPost('municipio'),
-            'estado'      => $this->request->getPost('estado'),
-            'cep'         => $this->request->getPost('cep'),
-            'tipo'        => 'cliente',
-            'idReferencia'=> $clienteId
+        // =====================
+        // INSERT CLIENTE
+        // =====================
+        $insert = $clienteModel->insert([
+            'nome'                => $nome,
+            'email'               => $email,
+            'celular'             => $celular,
+            'data_nas'            => $dataNas,
+            'senha'               => $senha,
+            'codigo_verificacao'  => $codigo,
+            'verificado'          => 0
         ]);
 
-        if (!$clienteId) {
-            return redirect()->back()->with('erro', 'Falha ao salvar cliente');
+        if (!$insert) {
+            return redirect()->back()->with('erro', 'Erro ao salvar cliente');
         }
 
-        return redirect()->to('/cliente/verificar/'.$clienteId);
+        $clienteId = $clienteModel->getInsertID();
+
+        // =====================
+        // INSERT ENDEREÇO
+        // =====================
+        $enderecoModel->insert([
+            'rua'          => $this->request->getPost('rua'),
+            'complemento'  => $this->request->getPost('complemento'),
+            'bairro'       => $this->request->getPost('bairro'),
+            'municipio'    => $this->request->getPost('municipio'),
+            'estado'       => $this->request->getPost('estado'),
+            'cep'          => $this->request->getPost('cep'),
+            'tipo'         => 'cliente',
+            'idReferencia' => $clienteId
+        ]);
+
+        // =====================
+        // SUCESSO
+        // =====================
+        return redirect()
+    ->to('/cliente/verificar/' . $clienteId)
+    ->with('sucesso', 'Cadastro realizado! Enviamos um código para seu e-mail.');
+
+    } catch (\Exception $e) {
+
+        return redirect()->back()->with('erro', 'Erro: ' . $e->getMessage());
     }
+}
+
+
+
 
     // -- VERIFICAR MOSTRA O FORMULÁRIO DE VERIFICAÇÃO DE CÓDIGO
     public function verificar($id)
-    {
-        $model = new Cliente_Model();
-        $cliente = $model->find($id);
+{
+    $model = new Cliente_Model();
+    $cliente = $model->find($id);
 
-        return view('cliente/verificar', [
-        'id' => $id,
-        'codigo' => $cliente['codigo_verificacao'],
-        'celular' => $cliente['celular']
-        ]);
-    }
+    return view('cliente/verificar', [
+        'id'      => $id,
+        'email'   => $cliente['email'],
+        'celular' => $cliente['celular'],
+        'codigo'  => $cliente['codigo_verificacao']
+    ]);
+}
 
     // -- CONFIRMAR CODIGO RECEBE O CÓDIGO DO FORMULÁRIO DE VERIFICAÇÃO E ATUALIZA O CLIENTE
     public function confirmarCodigo($id)

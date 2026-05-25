@@ -28,6 +28,49 @@ class Doador extends BaseController
         ]);
     }
 
+    private function verificarLogin()
+{
+    if (!session()->get('logado')) {
+        return redirect()->to('/doador/login')->send();
+        exit;
+    }
+}
+
+
+    // -- SALVA A ROUPA CADASTRADA
+    public function salvarRoupa()
+{
+    $model = new \App\Models\RoupaModel();
+
+    $file = $this->request->getFile('imagem');
+
+    $nomeImagem = null;
+
+    if ($file && $file->isValid() && !$file->hasMoved()) {
+
+        $nomeImagem = $file->getRandomName();
+
+        $file->move(ROOTPATH . 'public/uploads', $nomeImagem);
+    }
+
+    $model->insert([
+        'tipo'          => $this->request->getPost('tipo'),
+        'cor'           => $this->request->getPost('cor'),
+        'quantidade'    => $this->request->getPost('quantidade'),
+        'bairro'        => $this->request->getPost('bairro'),
+        'ponto_doacao'  => $this->request->getPost('ponto_doacao'),
+        'idDoador'      => session()->get('id'),
+        'imagem'        => $nomeImagem,
+        'criado_em'     => date('Y-m-d H:i:s')
+    ]);
+
+    return redirect()->to('/doador/roupa');
+}
+public function cadastrarRoupa()
+{
+    return view('doador/roupa/cadastrar');
+}
+
     // -- LOGIN DO DOADOR   
     public function login()
     {
@@ -95,12 +138,12 @@ class Doador extends BaseController
         return redirect()->back()->with('erro', 'Email ou senha inválidos');
     }
 
-    // -- LOGOUT DESTRÓI A SESSÃO
     public function logout()
-    {
-        session()->destroy();
-        return redirect()->to('/doador/login');
-    }
+{
+    session()->destroy();
+
+    return redirect()->to(base_url('/'));
+}
 
     // -- CADASTRAR MOSTRA O FORMULÁRIO DE CADASTRO
     public function cadastrar()
@@ -110,105 +153,104 @@ class Doador extends BaseController
 
     // -- SALVAR RECEBE OS DADOS DO FORMULÁRIO DE CADASTRO, VALIDA E SALVA O DOADOR
     public function salvar()
-    {
-        $doadorModel = new DoadorModel();
-        $enderecoModel = new EnderecoModel();
+{
+    try {
 
-        // 🔥 VALIDAÇÃO AQUI
+        $doadorModel   = new \App\Models\DoadorModel();
+        $enderecoModel = new \App\Models\EnderecoModel();
+
+        // =====================
+        // DADOS DO FORM
+        // =====================
+        $nome   = trim($this->request->getPost('nome'));
+        $email  = trim($this->request->getPost('email'));
+        $senha  = $this->request->getPost('senha');
+
+        // 🔥 AQUI ESTAVA O ERRO (faltava essa linha)
         $celular = preg_replace('/\D/', '', $this->request->getPost('celular'));
 
-        if (strlen($celular) != 11) {
-            return redirect()->back()->with('erro', 'Número inválido');
+        $dataNas = $this->request->getPost('data_nas');
+
+        // =====================
+        // VALIDAÇÕES BÁSICAS
+        // =====================
+        if (!$nome || !$email || !$senha) {
+            return redirect()->back()->with('erro', 'Preencha todos os campos obrigatórios');
         }
 
-
-            // 🔍 limpar celular
-        $celular = preg_replace('/\D/', '', $this->request->getPost('celular'));
-
-        // 🔍 validar tamanho
         if (strlen($celular) != 11) {
-            return redirect()->back()->with('erro', 'Número inválido');
+            return redirect()->back()->with('erro', 'Número de celular inválido');
         }
 
-        $email = $this->request->getPost('email');
-
-        // 🔥 VERIFICAR EMAIL
-        $existeEmail = $doadorModel->where('email', $email)->first();
-
-        if ($existeEmail) {
+        // =====================
+        // EMAIL DUPLICADO
+        // =====================
+        if ($doadorModel->where('email', $email)->first()) {
             return redirect()->back()->with('erro', 'Email já cadastrado');
         }
 
-        // 🔥 VERIFICAR CELULAR
-        $existeCelular = $doadorModel->where('celular', $celular)->first();
-
-        if ($existeCelular) {
+        // =====================
+        // CELULAR DUPLICADO
+        // =====================
+        if ($doadorModel->where('celular', $celular)->first()) {
             return redirect()->back()->with('erro', 'Celular já cadastrado');
         }
-        
+
+        // =====================
+        // CÓDIGO VERIFICAÇÃO
+        // =====================
         $codigo = rand(100000, 999999);
 
-
-        $doadorId = $doadorModel->insert([
-            'nome'      => $this->request->getPost('nome'),
-            'email'     => $this->request->getPost('email'),
-            'celular'   => $celular,
-            'data_nas'  => $this->request->getPost('data_nas'),
-            'senha'     => $this->request->getPost('senha'),
+        // =====================
+        // INSERT DOADOR
+        // =====================
+        $doadorModel->insert([
+            'nome'               => $nome,
+            'email'              => $email,
+            'celular'            => $celular,
+            'data_nas'           => $dataNas,
+            'senha'              => $senha,
             'codigo_verificacao' => $codigo,
-            'verificado' => 0, // 🔥 FALTAVA ISSO
-            'ultimo_acesso' => date('Y-m-d H:i:s')
+            'verificado'         => 0
         ]);
 
-        return redirect()->to('/doador/verificar/'.$doadorId);
+        $doadorId = $doadorModel->getInsertID();
 
-    }
-
-    // -- VERIFICA O LOGIN
-    private function verificarLogin()
-    {
-        if (!session()->get('logado')) {
-            redirect()->to('/doador/login')->send();
-            exit;
-        }
-    }
-
-    // -- CADASTRAR ROUPA DO DOADOR
-    public function cadastrarRoupa()
-    {
-        $this->verificarLogin();
-        return view('doador/roupa/cadastrar');
-    }
-
-    // -- SALVA A ROUPA CADASTRADA
-    public function salvarRoupa()
-    {
-        $model = new \App\Models\RoupaModel();
-
-        $file = $this->request->getFile('imagem');
-
-        $nomeImagem = null;
-
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-
-            $nomeImagem = $file->getRandomName();
-
-            $file->move(ROOTPATH . 'public/uploads', $nomeImagem);
-        }
-        $model->insert([
-            'tipo'          => $this->request->getPost('tipo'),
-            'cor'           => $this->request->getPost('cor'),
-            'quantidade'    => $this->request->getPost('quantidade'),
-            'bairro'        => $this->request->getPost('bairro'),
-            'ponto_doacao'  => $this->request->getPost('ponto_doacao'),
-            'idDoador'      => session()->get('id'),
-            'imagem'        => $nomeImagem,
-            'criado_em'     => date('Y-m-d H:i:s') // 🔥 AQUI
-
+        // =====================
+        // ENDEREÇO (igual cliente)
+        // =====================
+        $enderecoModel->insert([
+            'rua'          => $this->request->getPost('rua'),
+            'complemento'  => $this->request->getPost('complemento'),
+            'bairro'       => $this->request->getPost('bairro'),
+            'municipio'    => $this->request->getPost('municipio'),
+            'estado'       => $this->request->getPost('estado'),
+            'cep'          => $this->request->getPost('cep'),
+            'tipo'         => 'doador',
+            'idReferencia' => $doadorId
         ]);
 
-        return redirect()->to('/doador/roupa');
+        // =====================
+        // EMAIL DE VERIFICAÇÃO
+        // =====================
+        $emailService = \Config\Services::email();
+
+        $emailService->setFrom('sistema@vestemais.com', 'Veste+');
+        $emailService->setTo($email);
+        $emailService->setSubject('Código de verificação');
+        $emailService->setMessage('Seu código é: ' . $codigo);
+
+        $emailService->send();
+
+        // =====================
+        // REDIRECIONAMENTO
+        // =====================
+        return redirect()->to('/doador/verificar/' . $doadorId);
+
+    } catch (\Exception $e) {
+        return redirect()->back()->with('erro', 'Erro: ' . $e->getMessage());
     }
+}
 
     // -- VERIFICA SE O CELULAR É VERDADEIRO
     public function verificar($id)
